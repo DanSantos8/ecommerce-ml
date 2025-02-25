@@ -27,7 +27,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en">
       <body className={`${inter.variable} ${playfair.variable}`}>
         <NavHeader />
-        <main>{children}</main>
+        <main className="container mx-auto">{children}</main>
       </body>
     </html>
   )
