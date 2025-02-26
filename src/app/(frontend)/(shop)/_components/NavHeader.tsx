@@ -18,7 +18,7 @@ export const NavHeader = () => {
     },
   ]
   return (
-    <header className="container w-full h-24 bg-background content-center mx-auto">
+    <header className="container w-full h-24 bg-background content-center mx-auto px-4">
       <div className="flex justify-between container mx-auto items-center">
         <picture>
           <Image src="/logo-dark-img.png" alt="Santine Logo" width={164} height={41} />
