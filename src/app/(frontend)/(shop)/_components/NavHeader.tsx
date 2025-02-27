@@ -1,8 +1,15 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
+import { ShoppingBag, Search } from 'lucide-react'
+import CartDrawer from './CartDrawer'
+import { useCartStore } from '@/lib/store'
 
 export const NavHeader = () => {
+  const { isCartOpen, openCart, closeCart, getItemsCount } = useCartStore()
+
   const navLinks = [
     {
       label: 'Home',
@@ -17,6 +24,7 @@ export const NavHeader = () => {
       href: '/blog',
     },
   ]
+
   return (
     <header className="container w-full h-24 bg-background content-center mx-auto px-4">
       <div className="flex justify-between container mx-auto items-center">
@@ -37,40 +45,25 @@ export const NavHeader = () => {
             ))}
           </ul>
           <Button variant="ghost" size="icon" className="rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
+            <Search className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="8" cy="21" r="1" />
-              <circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-            </svg>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full cursor-pointer relative"
+            onClick={openCart}
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {getItemsCount() > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {getItemsCount()}
+              </span>
+            )}
           </Button>
         </div>
       </div>
+
+      <CartDrawer isOpen={isCartOpen} onClose={closeCart} />
     </header>
   )
 }
