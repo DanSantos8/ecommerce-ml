@@ -32,8 +32,12 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       <DrawerContent className="sm:max-w-md">
         <DrawerHeader className="border-b pb-4">
           <DrawerTitle className="text-xl font-medium">Your Cart</DrawerTitle>
-          <DrawerClose className="absolute right-4 top-4 ">
-            <Button variant="ghost" size="icon" className="rounded-full cursor-pointer">
+          <DrawerClose asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-4 top-4 rounded-full cursor-pointer"
+            >
               <X className="h-5 w-5" />
             </Button>
           </DrawerClose>
