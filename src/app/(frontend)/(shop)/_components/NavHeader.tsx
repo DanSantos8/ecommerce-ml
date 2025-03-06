@@ -1,8 +1,25 @@
 import { Button } from '@/components/ui/button'
+import { Search, ShoppingCart } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
+import Authentication from '../../(auth)/_components/authentication'
+import SignInButton from '../../(auth)/_components/sign-in-button'
+import {
+  NavigationMenuList,
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+} from '@/components/ui/navigation-menu'
+import NavLinks from './NavLinks'
 
-export const NavHeader = () => {
+const fetchUsers = async () => {
+  'use server'
+  const response = await fetch('http://localhost:3000/api/categories?depth=1')
+
+  return response.json()
+}
+
+export const NavHeader = async () => {
   const navLinks = [
     {
       label: 'Home',
@@ -17,60 +34,40 @@ export const NavHeader = () => {
       href: '/blog',
     },
   ]
+
+  const categories = await fetchUsers()
   return (
-    <header className="container w-full h-24 bg-background content-center mx-auto px-4">
-      <div className="flex justify-between container mx-auto items-center">
+    <header className="w-full h-24 bg-background content-center px-4 z-50">
+      <div className="flex justify-between items-center h-full">
         <picture>
           <Image src="/logo-dark-img.png" alt="Santine Logo" width={164} height={41} />
         </picture>
+        <div className="flex items-center gap-4 h-full">
+          <div className="flex group h-full">
+            <Button variant="ghost" className="h-full">
+              Categorias
+            </Button>
+            <div
+              className="shadow-lg absolute top-24 left-0 w-full bg-background z-50 border-t border-border py-12 
+            opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+            >
+              <div className="container mx-auto">
+                <NavLinks categories={categories} />
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="flex items-center gap-4">
-          <ul className="flex">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="px-4 text-sm hover:text-muted-foreground transition-colors"
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
           <Button variant="ghost" size="icon" className="rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
+            <Search />
           </Button>
           <Button variant="ghost" size="icon" className="rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="8" cy="21" r="1" />
-              <circle cx="19" cy="21" r="1" />
-              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-            </svg>
+            <ShoppingCart />
           </Button>
+          <SignInButton />
         </div>
       </div>
+      <Authentication />
     </header>
   )
 }

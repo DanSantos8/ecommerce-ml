@@ -66,15 +66,25 @@ export interface Config {
   };
   collections: {
     users: User;
-    media: Media;
+    categories: Category;
+    'sub-categories': SubCategory;
+    products: Product;
+    'product-images': ProductImage;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    categories: {
+      subcategories: 'sub-categories';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
+    categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'sub-categories': SubCategoriesSelect<false> | SubCategoriesSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    'product-images': ProductImagesSelect<false> | ProductImagesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -117,6 +127,8 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  firstName?: string | null;
+  lastName?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -130,11 +142,52 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
+ * via the `definition` "categories".
  */
-export interface Media {
+export interface Category {
+  id: string;
+  name: string;
+  slug?: string | null;
+  subcategories?: {
+    docs?: (string | SubCategory)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sub-categories".
+ */
+export interface SubCategory {
+  id: string;
+  name: string;
+  slug: string;
+  category: string | Category;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
   id: number;
-  alt: string;
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+  sub_category_id?: (string | null) | SubCategory;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-images".
+ */
+export interface ProductImage {
+  id: number;
+  alt?: string | null;
+  product: number | Product;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -159,8 +212,20 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
-        relationTo: 'media';
-        value: number | Media;
+        relationTo: 'categories';
+        value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'sub-categories';
+        value: string | SubCategory;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'product-images';
+        value: number | ProductImage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -209,6 +274,8 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -221,10 +288,47 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
+ * via the `definition` "categories_select".
  */
-export interface MediaSelect<T extends boolean = true> {
+export interface CategoriesSelect<T extends boolean = true> {
+  id?: T;
+  name?: T;
+  slug?: T;
+  subcategories?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sub-categories_select".
+ */
+export interface SubCategoriesSelect<T extends boolean = true> {
+  id?: T;
+  name?: T;
+  slug?: T;
+  category?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  description?: T;
+  price?: T;
+  sub_category_id?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-images_select".
+ */
+export interface ProductImagesSelect<T extends boolean = true> {
   alt?: T;
+  product?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
