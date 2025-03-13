@@ -1,44 +1,26 @@
 import { Button } from '@/components/ui/button'
-import { Search, ShoppingCart } from 'lucide-react'
+import { Search, ShoppingCart, User } from 'lucide-react'
 import Image from 'next/image'
 import Authentication from '../../(auth)/_components/authentication'
 import SignInButton from '../../(auth)/_components/sign-in-button'
-import {
-  NavigationMenuList,
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-} from '@/components/ui/navigation-menu'
 import NavLinks from './NavLinks'
-
+import { Profile } from './Profile'
+import { getMe } from '@/server/actions/auth'
 const fetchUsers = async () => {
   'use server'
-  const response = await fetch('http://localhost:3000/api/categories?depth=1')
+  const response = await fetch('http://localhost:3000/api/categories?depth=2')
 
   return response.json()
 }
 
 export const NavHeader = async () => {
-  const navLinks = [
-    {
-      label: 'Home',
-      href: '/',
-    },
-    {
-      label: 'Shop',
-      href: '/shop',
-    },
-    {
-      label: 'Blog',
-      href: '/blog',
-    },
-  ]
-
+  const me = await getMe()
   const categories = await fetchUsers()
+  const user = me?.user
+
   return (
     <header className="w-full h-24 bg-background content-center px-4 z-50">
-      <div className="flex justify-between items-center h-full">
+      <div className="flex justify-between items-center h-full container mx-auto">
         <picture>
           <Image src="/logo-dark-img.png" alt="Santine Logo" width={164} height={41} />
         </picture>
@@ -64,7 +46,7 @@ export const NavHeader = async () => {
           <Button variant="ghost" size="icon" className="rounded-full">
             <ShoppingCart />
           </Button>
-          <SignInButton />
+          {user ? <Profile user={user} /> : <SignInButton />}
         </div>
       </div>
       <Authentication />
