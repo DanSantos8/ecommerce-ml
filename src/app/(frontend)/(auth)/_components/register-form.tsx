@@ -1,48 +1,100 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { signup } from '@/server/actions/auth'
 import { FORM_TYPES, FormType } from '@/utils/constants'
-import { useEffect } from 'react'
+import { PasswordFormValues, passwordSchema } from '@/utils/schemas'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { startTransition, useActionState, useEffect, useRef } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import { z } from 'zod'
+
+const registerSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  email: z.string().email(),
+  password: z.string().min(8),
+  confirmPassword: z.string().min(8),
+})
+
+type RegisterFormValues = z.infer<typeof registerSchema>
 
 interface RegisterFormProps {
   setForm: (formType: FormType) => void
 }
 
 const RegisterForm = ({ setForm }: RegisterFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+  })
+  const formRef = useRef<HTMLFormElement>(null)
+  const [state, formAction, pending] = useActionState(signup, {
+    errors: null,
+    data: {
+      email: null,
+      firstName: null,
+      lastName: null,
+      password: null,
+      confirmPassword: null,
+      message: null,
+      success: null,
+    },
+  })
+
+  const { message, success } = state.data
+
+  useEffect(() => {
+    const userCreated = success && message
+
+    const notify = () => toast.success(message)
+
+    if (userCreated) {
+      notify()
+      setForm(FORM_TYPES.LOGIN)
+    }
+  }, [success, message, setForm])
+
   return (
     <div className="w-full max-w-md space-y-6">
       <form
-        //action={formAction}
+        action={formAction}
         className="space-y-4"
-        //ref={formRef}
-        /*  onSubmit={(e) => {
+        ref={formRef}
+        onSubmit={(e) => {
           e.preventDefault()
           handleSubmit(() => {
             startTransition(() => formAction(new FormData(formRef.current!)))
           })(e)
-        }} */
+        }}
       >
         <div className="space-y-2">
-          <Label htmlFor="email">Nome</Label>
+          <Label htmlFor="firstName">Nome</Label>
           <Input
-            id="name"
+            id="firstName"
             type="text"
             placeholder="Seu nome"
-            //{...register('email')}
-            //aria-invalid={!!errors.email}
+            {...register('firstName')}
+            aria-invalid={!!errors.firstName}
           />
-          {/* {errors.   && <p className="text-sm text-destructive">{errors.email.message}</p>} */}
+          {errors.firstName && (
+            <p className="text-sm text-destructive">{errors.firstName.message}</p>
+          )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Sobrenome</Label>
+          <Label htmlFor="lastName">Sobrenome</Label>
           <Input
             id="lastName"
             type="text"
             placeholder="Seu sobrenome"
-            //{...register('lastName')}
-            //aria-invalid={!!errors.lastName}
+            {...register('lastName')}
+            aria-invalid={!!errors.lastName}
           />
-          {/* {errors.lastName && <p className="text-sm text-destructive">{errors.lastName.message}</p>} */}
+          {errors.lastName && <p className="text-sm text-destructive">{errors.lastName.message}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -50,10 +102,11 @@ const RegisterForm = ({ setForm }: RegisterFormProps) => {
             id="email"
             type="email"
             placeholder="seu@email.com"
-            //{...register('email')}
-            //aria-invalid={!!errors.email}
+            autoComplete="email"
+            {...register('email')}
+            aria-invalid={!!errors.email}
           />
-          {/* {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>} */}
+          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
@@ -62,10 +115,11 @@ const RegisterForm = ({ setForm }: RegisterFormProps) => {
             id="password"
             type="password"
             placeholder="••••••••"
-            //{...register('password')}
-            //aria-invalid={!!errors.password}
+            autoComplete="current-password"
+            {...register('password')}
+            aria-invalid={!!errors.password}
           />
-          {/* {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>} */}
+          {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirmar senha</Label>
@@ -73,52 +127,59 @@ const RegisterForm = ({ setForm }: RegisterFormProps) => {
             id="confirmPassword"
             type="password"
             placeholder="••••••••"
-            //{...register('confirmPassword')}
-            //aria-invalid={!!errors.confirmPassword}
+            autoComplete="confirm-current-password"
+            {...register('confirmPassword')}
+            aria-invalid={!!errors.confirmPassword}
           />
-          {/* {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>} */}
-        </div>
-        <Button type="submit" className="w-full" disabled={false}>
-          {false ? (
-            <>
-              <svg
-                className="mr-2 h-4 w-4 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
-              Entrando...
-            </>
-          ) : (
-            <>
-              <svg
-                className="mr-2 h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                <polyline points="10 17 15 12 10 7" />
-                <line x1="15" y1="12" x2="3" y2="12" />
-              </svg>
-              Registrar
-            </>
+          {errors.confirmPassword && (
+            <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
           )}
-        </Button>
+        </div>
+
+        {state.error && <p className="text-sm text-destructive">{state.error}</p>}
+        <div className="flex items-center justify-between">
+          <Button type="submit" className="w-full">
+            {pending ? (
+              <>
+                <svg
+                  className="mr-2 h-4 w-4 animate-spin"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+                </svg>
+                Registrando...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="mr-2 h-4 w-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                  <polyline points="10 17 15 12 10 7" />
+                  <line x1="15" y1="12" x2="3" y2="12" />
+                </svg>
+                Registrar
+              </>
+            )}
+          </Button>
+        </div>
 
         <div className="flex items-center justify-between">
           <span className="text-xs text-primary hover:underline">Já tem uma conta?</span>

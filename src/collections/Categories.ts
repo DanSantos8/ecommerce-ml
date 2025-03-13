@@ -43,11 +43,12 @@ export const Categories: CollectionConfig = {
       },
     },
     {
-      name: 'subcategories',
+      name: 'subCategories',
       type: 'join',
       collection: 'sub-categories',
       on: 'category',
-      maxDepth: 1,
+      hasMany: true,
+      maxDepth: 2,
       admin: {
         components: {
           Field: undefined,

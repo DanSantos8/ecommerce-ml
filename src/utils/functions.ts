@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
+import { z } from 'zod'
+import { passwordSchema } from './schemas'
 
 interface FormatSlugProps {
   data?: {
@@ -26,4 +28,30 @@ export const generateId = ({ data }: GenerateIdProps) => {
     return { ...data, id: customID }
   }
   return data
+}
+
+export const validatePassword = (password: string, confirmPassword: string) => {
+  try {
+    const sanitizedPassword = password.trim()
+    const sanitizedConfirmPassword = confirmPassword.trim()
+
+    passwordSchema.parse({
+      password: sanitizedPassword,
+      confirmPassword: sanitizedConfirmPassword,
+    })
+
+    return {
+      error: null,
+    }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        error: error.errors[0].message,
+      }
+    }
+
+    return {
+      error: 'Erro na validação da senha',
+    }
+  }
 }

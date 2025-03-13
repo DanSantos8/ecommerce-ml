@@ -1,27 +1,31 @@
 'use client'
 
-import { startTransition, useRef, useState } from 'react'
+import { startTransition, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useActionState } from 'react'
-import signin from '@/server/actions/sign-in'
+import { login } from '@/server/actions/auth'
 import { LoginFormValues, loginSchema } from '@/utils/schemas'
 import { FORM_TYPES, FormType } from '@/utils/constants'
-
+import useLoginStore from '@/store/login-slice'
+import { Loader2 } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 interface LoginFormProps {
   setForm: (formType: FormType) => void
 }
 
 export const LoginForm = ({ setForm }: LoginFormProps) => {
+  const { onModalClose } = useLoginStore()
   const formRef = useRef<HTMLFormElement>(null)
-  const [state, formAction, pending] = useActionState(signin, {
+  const [state, formAction, pending] = useActionState(login, {
     errors: null,
     data: {
       email: null,
       password: null,
+      success: false,
     },
   })
 
@@ -37,6 +41,12 @@ export const LoginForm = ({ setForm }: LoginFormProps) => {
       remember: false,
     },
   })
+
+  useEffect(() => {
+    if (state.data?.success) {
+      onModalClose()
+    }
+  }, [state.data?.success, onModalClose])
 
   return (
     <div className="w-full max-w-md space-y-6">
@@ -57,6 +67,7 @@ export const LoginForm = ({ setForm }: LoginFormProps) => {
             id="email"
             type="email"
             placeholder="seu@email.com"
+            autoComplete="email"
             {...register('email')}
             aria-invalid={!!errors.email}
           />
@@ -69,6 +80,7 @@ export const LoginForm = ({ setForm }: LoginFormProps) => {
             id="password"
             type="password"
             placeholder="••••••••"
+            autoComplete="current-password"
             {...register('password')}
             aria-invalid={!!errors.password}
           />
@@ -86,24 +98,20 @@ export const LoginForm = ({ setForm }: LoginFormProps) => {
             Lembrar-me
           </Label>
         </div>
+        {state.errors && (
+          <div className="flex items-center justify-between">
+            {state.errors.map((error: { message: string }) => (
+              <p key={error.message} className="text-xs text-destructive">
+                {error.message}
+              </p>
+            ))}
+          </div>
+        )}
 
         <Button type="submit" className="w-full" disabled={pending}>
           {pending ? (
             <>
-              <svg
-                className="mr-2 h-4 w-4 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-              </svg>
+              <Loader2 className="w-4 h-4 animate-spin" />
               Entrando...
             </>
           ) : (

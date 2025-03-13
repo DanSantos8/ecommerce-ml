@@ -2,6 +2,7 @@ import React from 'react'
 import '../global.css'
 import NavHeader from './_components/NavHeader'
 import { Playfair_Display, Inter } from 'next/font/google'
+import { Toaster } from 'react-hot-toast'
 
 export const inter = Inter({
   subsets: ['latin'],
@@ -28,6 +29,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       <body className={`${inter.variable} ${playfair.variable}`}>
         <NavHeader />
         <main className="container mx-auto">{children}</main>
+        <Toaster />
       </body>
     </html>
   )
