@@ -70,6 +70,7 @@ export interface Config {
     'sub-categories': SubCategory;
     products: Product;
     'product-images': ProductImage;
+    'product-collection': ProductCollection;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -78,6 +79,9 @@ export interface Config {
     categories: {
       subCategories: 'sub-categories';
     };
+    'product-collection': {
+      products: 'products';
+    };
   };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
@@ -85,6 +89,7 @@ export interface Config {
     'sub-categories': SubCategoriesSelect<false> | SubCategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     'product-images': ProductImagesSelect<false> | ProductImagesSelect<true>;
+    'product-collection': ProductCollectionSelect<false> | ProductCollectionSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -177,6 +182,25 @@ export interface Product {
   description?: string | null;
   price?: number | null;
   sub_category_id?: (string | null) | SubCategory;
+  productCollection?: (string | ProductCollection)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-collection".
+ */
+export interface ProductCollection {
+  id: string;
+  name: string;
+  eyebrow: string;
+  slug: string;
+  description: string;
+  type: 'summer' | 'winter' | 'spring' | 'autumn' | 'trending' | 'new';
+  products?: {
+    docs?: (number | Product)[] | null;
+    hasNextPage?: boolean | null;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -226,6 +250,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'product-images';
         value: number | ProductImage;
+      } | null)
+    | ({
+        relationTo: 'product-collection';
+        value: string | ProductCollection;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -319,6 +347,7 @@ export interface ProductsSelect<T extends boolean = true> {
   description?: T;
   price?: T;
   sub_category_id?: T;
+  productCollection?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -340,6 +369,21 @@ export interface ProductImagesSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-collection_select".
+ */
+export interface ProductCollectionSelect<T extends boolean = true> {
+  id?: T;
+  name?: T;
+  eyebrow?: T;
+  slug?: T;
+  description?: T;
+  type?: T;
+  products?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
