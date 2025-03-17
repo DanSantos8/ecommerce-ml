@@ -1,43 +1,57 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Search, ShoppingCart, User } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import Authentication from '../../(auth)/_components/authentication'
 import SignInButton from '../../(auth)/_components/sign-in-button'
 import NavLinks from './NavLinks'
 import { Profile } from './Profile'
-import { getMe } from '@/server/actions/auth'
-const fetchUsers = async () => {
-  'use server'
-  const response = await fetch('http://localhost:3000/api/categories?depth=2')
-
-  return response.json()
+import { Category } from '@/payload-types'
+type NavHeaderProps = {
+  me: {
+    user: {
+      id: string
+      email: string
+      firstName: string
+      lastName: string
+    }
+  }
+  categories: {
+    docs: Category[]
+  }
 }
 
-export const NavHeader = async () => {
-  const me = await getMe()
-  const categories = await fetchUsers()
+export const NavHeader = ({ me, categories }: NavHeaderProps) => {
   const user = me?.user
 
   return (
-    <header className="w-full h-24 bg-background content-center px-4 z-50">
+    <header className="w-full fixed top-0 left-0 px-4 z-50 transition-colors duration-300 bg-white py-2">
       <div className="flex justify-between items-center h-full container mx-auto">
-        <picture>
-          <Image src="/logo-dark-img.png" alt="Santine Logo" width={164} height={41} />
+        <picture className="flex-shrink-0">
+          <Image src="/logo-dark-img.png" alt="Santine Logo" width={120} height={30} />
         </picture>
-        <div className="flex items-center gap-4 h-full">
-          <div className="flex group h-full">
-            <Button variant="ghost" className="h-full">
-              Categorias
-            </Button>
-            <div
-              className="shadow-lg absolute top-24 left-0 w-full bg-background z-50 border-t border-border py-12 
-            opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+        <div className="flex items-center gap-6 h-full justify-center flex-1">
+          <Link href="/shop/all" className="px-4 py-2 text-primary transition-colors">
+            Shop
+          </Link>
+          {categories.docs.map((category) => (
+            <Link
+              key={category.id}
+              href={`/shop/${category.slug}`}
+              className="px-4 py-2 text-primary transition-colors"
             >
-              <div className="container mx-auto">
-                <NavLinks categories={categories} />
-              </div>
-            </div>
-          </div>
+              {category.name}
+            </Link>
+          ))}
+          <Link href="/blog" className="px-4 py-2 text-primary transition-colors">
+            Blog
+          </Link>
+          <Link href="/contact" className="px-4 py-2 text-primary transition-colors">
+            Contato
+          </Link>
         </div>
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="rounded-full">

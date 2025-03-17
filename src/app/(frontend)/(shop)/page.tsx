@@ -5,6 +5,8 @@ import ProductCarousel from './_components/ProductCarousel'
 import type { Where } from 'payload'
 import { ProductCollection } from '@/payload-types'
 import CategoryNavigation from './_components/CategoryNavigation'
+import Testimonials from './_components/Testimonials'
+import Banner from './_components/Banner'
 
 const query: Where = {
   type: {
@@ -19,7 +21,6 @@ const fetchCollections = async () => {
     },
     { addQueryPrefix: true },
   )
-  console.log(stringifiedQuery)
   const res = await fetch(`http://localhost:3000/api/product-collection${stringifiedQuery}&depth=1`)
   const data = await res.json()
 
@@ -30,12 +31,18 @@ export default async function HomePage() {
   const collections = await fetchCollections()
 
   return (
-    <div className="grid grid-cols-12 gap-y-20 pb-10">
+    <div className="grid grid-cols-12 pb-10">
       <div className="col-span-12">
         <Hero />
       </div>
-      <div className="col-span-12 px-4">
+      <div className="col-span-12 px-10 py-20">
         <ProductCarousel collections={collections} />
+      </div>
+      <div className="col-span-12">
+        <Banner />
+      </div>
+      <div className="col-span-12">
+        <Testimonials />
       </div>
       <div className="col-span-12">
         <CategoryNavigation />

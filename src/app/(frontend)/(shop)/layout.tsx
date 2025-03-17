@@ -1,19 +1,21 @@
 import React from 'react'
 import '../global.css'
-import NavHeader from './_components/NavHeader'
-import { Playfair_Display, Inter } from 'next/font/google'
+import NavHeaderWrapper from './_components/NavHeaderWrapper'
+import { Cormorant_SC, Geist } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 
-export const inter = Inter({
+export const geist = Geist({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
+  variable: '--font-geist',
+  weight: ['300', '400', '500', '600', '700'],
 })
 
-export const playfair = Playfair_Display({
+export const cormorant = Cormorant_SC({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-playfair',
+  variable: '--font-cormorant',
+  weight: ['300', '400', '500', '600', '700'],
 })
 
 export const metadata = {
@@ -26,8 +28,8 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable}`}>
-        <NavHeader />
+      <body className={`${geist.variable} ${cormorant.variable}`}>
+        <NavHeaderWrapper />
         <main>{children}</main>
         <Toaster />
       </body>
