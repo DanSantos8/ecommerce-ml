@@ -52,8 +52,8 @@ export const Authentication = () => {
     <Dialog open={modalOpen} onOpenChange={onModalClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="font-inter">{formHeading.title[currentForm]}</DialogTitle>
-          <DialogDescription className="font-inter">
+          <DialogTitle className="font-geist">{formHeading.title[currentForm]}</DialogTitle>
+          <DialogDescription className="font-geist">
             {formDescription[currentForm]}
           </DialogDescription>
         </DialogHeader>

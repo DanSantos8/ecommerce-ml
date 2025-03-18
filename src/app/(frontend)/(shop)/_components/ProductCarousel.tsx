@@ -2,10 +2,11 @@
 import { Product, ProductCollection } from '@/payload-types'
 import { ProductCard } from './ProductCard'
 import { Carousel, CarouselApi, CarouselContent, CarouselItem } from '@/components/ui/carousel'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 interface ProductCollectionProps {
   collections: ProductCollection[]
@@ -24,14 +25,21 @@ export const ProductCarousel = (props: ProductCollectionProps) => {
 
         return (
           <div className="flex flex-col gap-12" key={collection.id}>
-            <div className="flex justify-center flex-col items-center gap-4">
-              <div className="border border-solid px-2 md:px-4 py-0.5 border-gray-400">
-                <span className="text-gray-400 text-xs capitalize">{collection.eyebrow}</span>
+            <div className=" flex justify-between items-center">
+              <div className="flex justify-center flex-col items-start gap-2">
+                <span className="text-muted-foreground text-sm uppercase tracking-widest">
+                  {collection.eyebrow}
+                </span>
+                <h2 className="text-primary font-cormorant text-xl md:text-4xl font-medium uppercase">
+                  {collection.name}
+                </h2>
               </div>
-              <h2 className="text-primary font-playfair text-2xl md:text-4xl">{collection.name}</h2>
-              <p className="text-sm font-playfair md:text-xl text-gray-400 px-4 text-center">
-                {collection.description}
-              </p>
+              <Link href={`/shop/${collection.slug}`} className="flex items-center gap-2">
+                <span className="text-muted-foreground text-sm uppercase tracking-widest">
+                  See all
+                </span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
             <section className="grid col-span-12 gap-x-6 gap-y-12">
               <Carousel setApi={setApi}>
